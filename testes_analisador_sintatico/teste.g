@@ -1,51 +1,142 @@
-/* Teste completo para o compilador Goianinha
-   - Declarações de variáveis e funções
-   - Estruturas de controle
-   - Operações aritméticas e lógicas
-   - Entrada/saída */
+/* 
+ * Programa exemplo que demonstra todos os recursos da linguagem Goianinha
+ * Inclui declarações de variáveis, funções, estruturas de controle, operações, etc.
+ */
 
-int global;  /* Variável global */
+/* Declaração de variáveis globais */
+int global1, global2;
+car texto_global;
 
-/* Função simples */
-int soma(int a, int b) {
-    retorne a + b;
+/* Função que calcula o fatorial de um número */
+int fatorial(int n) {
+    /* Declaração de variável local */
+    int resultado;
+    
+    /* Estrutura condicional */
+    se (n <= 1) entao
+        retorne 1;
+    senao
+        resultado = n * fatorial(n - 1);
+    
+    retorne resultado;
 }
 
-/* Programa principal */
+/* Função que verifica se um número é primo */
+int eh_primo(int num) {
+    int i;
+    
+    se (num <= 1) entao
+        retorne 0;
+    
+    /* Estrutura de repetição */
+    enquanto (i * i <= num) execute {
+        se (num % i == 0) entao
+            retorne 0;
+        i = i + 1;
+    }
+    
+    retorne 1;
+}
+
+/* Função principal */
 programa {
-    int x, y, resultado;
+    /* Declaração de variáveis locais */
+    int a, b, c, opcao;
     car caractere;
     
-    /* Atribuições e operações */
-    x = 10;
-    y = 5 * 2 + 3;
-    global = x - y;
-    caractere = "A";
+    /* Atribuições e operações aritméticas */
+    a = 10;
+    b = 20;
+    c = a + b * 3 - 5 / 2;
     
     /* Chamada de função */
-    resultado = soma(x, y);
+    c = fatorial(5);
     
-    /* Estruturas condicionais */
-    se (resultado > 10) entao {
-        escreva "Resultado maior que 10";
-    } senao {
-        escreva "Resultado menor ou igual a 10";
-    }
+    /* Entrada de dados */
+    leia opcao;
+    leia caractere;
     
-    /* Loop enquanto */
-    enquanto (x > 0) execute {
-        escreva x;
-        x = x - 1;
-    }
-    
-    /* Entrada/saída */
-    leia y;
-    escreva "O valor de y é: ", y;
-    
-    /* Operações lógicas */
-    se (x == 0 && y != 0) entao {
-        escreva "x é zero e y é não-zero";
-    }
-    
+    /* Saída de dados */
+    escreva "O fatorial de 5 é: ";
+    escreva c;
     novalinha;
+    
+    escreva "Digite um número para verificar se é primo: ";
+    leia a;
+    
+    /* Estrutura condicional completa com operações lógicas */
+    se (eh_primo(a) == 1) entao
+        escreva "O número é primo";
+    senao
+        escreva "O número não é primo";
+    novalinha;
+    
+    /* Operações de comparação */
+    se (a > b e a < 100) entao {
+        escreva "O número está entre ";
+        escreva b;
+        escreva " e 100";
+        novalinha;
+    }
+    
+    /* Operações lógicas complexas */
+    se ((a == 0 ou b == 0) e !(c < 0)) entao
+        escreva "Condição complexa satisfeita";
+    novalinha;
+    
+    /* Bloco de código aninhado */
+    enquanto (opcao != 0) execute {
+        escreva "Menu:";
+        novalinha;
+        escreva "1 - Calcular fatorial";
+        novalinha;
+        escreva "2 - Verificar primo";
+        novalinha;
+        escreva "0 - Sair";
+        novalinha;
+        escreva "Opção: ";
+        
+        leia opcao;
+        
+        se (opcao == 1) entao {
+            escreva "Digite um número: ";
+            leia a;
+            escreva "Fatorial: ";
+            escreva fatorial(a);
+            novalinha;
+        } senao se (opcao == 2) entao {
+            escreva "Digite um número: ";
+            leia a;
+            se (eh_primo(a)) entao
+                escreva "É primo";
+            senao
+                escreva "Não é primo";
+            novalinha;
+        }
+    }
+    
+    /* Operações com strings (cadeias de caracteres) */
+    escreva "Programa encerrado. Obrigado!";
+    novalinha;
+    
+    /* Expressões complexas */
+    c = (a + b) * (a - b) / 2 + (10 % 3);
+    
+    /* Operadores relacionais diversos */
+    se (a >= b ou a <= c e b != a) entao
+        escreva "Condição relacional satisfeita";
+    novalinha;
+    
+    /* Uso de todos os operadores */
+    a = a + 1;
+    b = b - 1;
+    c = c * 2;
+    a = a / 2;
+    a = a % 3;
+    
+    /* Operadores unários */
+    a = -a;
+    b = !b;
+    
+    retorne 0;
 }

@@ -34,6 +34,7 @@ void yyerror(const char *s);
 %token MAIOR_IGUAL 275
 %token MENOR 276
 %token MAIOR 277
+%token CARCONST 278
 %token ERROR
 
 %left OU
@@ -143,6 +144,7 @@ PrimExpr: ID '(' ListExpr ')'
     | ID '(' ')'
     | ID
     | INTCONST
+    | CARCONST
     | '(' Expr ')'
     ;
 
