@@ -1,0 +1,11 @@
+echo -e "\nCOMANDOS:\n"; i=1; for f in *.g; do echo "./goianinha $f"; ((i++)); done; echo -e "\nTESTE GERAL:\n./goianinha" *.g
+
+./goianinha erroLin6AsteriscoAmais.g
+./goianinha expressao1Correto.g
+./goianinha expressao1ErroLin4CadeiaNaoTermina.g
+./goianinha expressao1ErroLin4PontoVirg.g
+./goianinha fatorial.g
+./goianinha fatorialCorreto.g
+./goianinha fatorialErroLin15String.g
+./goianinha fatorialErroLin1Comentario.g
+./goianinha teste.g
