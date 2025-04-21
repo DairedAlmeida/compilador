@@ -53,6 +53,7 @@ int linha = 1;
 
 [a-zA-Z_][a-zA-Z0-9_]*  { return ID; }
 [0-9]+                  { return INTCONST; }
+'[^'\n]'                { return CARCONST; }
 \"([^\"\n]*)\"          { return CAD_CAR; }
 
 "/*"([^*]|\*+[^*/])*\*+"/" { /* Ignora comentários */ }
@@ -67,6 +68,20 @@ int linha = 1;
 \"([^\"\n]*) {
     char msg[100];
     snprintf(msg, sizeof(msg), "CADEIA DE CARACTERES OCUPA MAIS DE UMA LINHA");
+    yyerror_lex(msg);
+    return ERROR;
+}
+
+\'([^\\'\n]|\\.)*[\n] {
+    char msg[100];
+    snprintf(msg, sizeof(msg), "CARACTERE OCUPA MAIS DE UMA LINHA");
+    yyerror_lex(msg);
+    return ERROR;
+}
+
+\'([^\\'\n]{2,}|\\.+)\' {
+    char msg[100];
+    snprintf(msg, sizeof(msg), "CARACTERE COM MAIS DE UM SÍMBOLO");
     yyerror_lex(msg);
     return ERROR;
 }
