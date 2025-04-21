@@ -1,3 +1,5 @@
+cd testes_analisador_sintatico
+
 echo -e "\nCOMANDOS:\n"; i=1; for f in *.g; do echo "./goianinha $f"; ((i++)); done; echo -e "\nTESTE GERAL:\n./goianinha" *.g
 
 ./goianinha erroLin6AsteriscoAmais.g
