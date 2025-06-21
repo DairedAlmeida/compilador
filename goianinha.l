@@ -1,31 +1,39 @@
 %{
-#include <string.h>
-#include "goianinha.tab.h" // Contém os nomes dos tokens: PROGRAM, ID, etc.
-#include "arvore.h"       // Necessário por transitividade de includes
+/* ========================================================================== */
+/* --- Seção 1: Código C e Definições --------------------------------------- */
+/* ========================================================================== */
 
-// Função para tratar erros léxicos, chamada pelas regras abaixo.
+#include <string.h>
+#include "goianinha.tab.h"
+#include "arvore.h"
+
+/* Função de erro customizada para a análise léxica. */
 void yyerror_lex(const char *s) {
     fprintf(stderr, "ERRO LÉXICO (linha %d): %s, texto: '%s'\n", yylineno, s, yytext);
 }
 
+/*
+  Opções do Flex:
+    - yylineno: mantém a contagem de linhas automaticamente.
+    - noyywrap: não precisa da função yywrap().
+    - nounput/noinput: remove funções não utilizadas, eliminando avisos.
+*/
 %}
 
-/* Opções do Flex:
-   - yylineno: mantém a contagem de linhas automaticamente.
-   - noyywrap: não precisa da função yywrap().
-   - nounput/noinput: remove funções não utilizadas, eliminando avisos.
-*/
+/* --- Opções de Configuração do Flex --- */
 %option yylineno noyywrap nounput noinput
 
-/* Definições Regulares (da sua versão antiga, que são mais robustas) */
-ID      [a-zA-Z_][a-zA-Z0-9_]*
-DIGITO  [0-9]+
-CAR     '[^'\n]'
-CADEIA  \"([^\"\n]*)\"
+/* --- Definições de Nomes para Expressões Regulares --- */
+ID                 [a-zA-Z_][a-zA-Z0-9_]*
+DIGITO             [0-9]+
+CAR                '[^'\n]'
+CADEIA             \"([^\"\n]*)\"
+COMENTARIO_BLOCO   "/*"([^*]|\*+[^*/])*\*+"/"
+COMENTARIO_LINHA   "//".*
 
-/* Regras para comentários (combinando as duas versões) */
-COMENTARIO_BLOCO "/*"([^*]|\*+[^*/])*\*+"/"
-COMENTARIO_LINHA "//".*
+/* ========================================================================== */
+/* --- Seção 2: Regras de Reconhecimento (Padrões e Ações) ------------------ */
+/* ========================================================================== */
 
 %%
 

@@ -1,140 +1,79 @@
-/* 
- * Programa exemplo que demonstra todos os recursos da linguagem Goianinha
- * Inclui declarações de variáveis, funções, estruturas de controle, operações, etc.
+/*
+ * ARQUIVO DE TESTE SEMANTICAMENTE CORRETO
+ * ---------------------------------------
+ * Este código segue todas as regras semânticas da Goianinha
+ * e deve ser compilado sem erros.
  */
 
-/* Declaração de variáveis globais */
-int global1, global2;
-car texto_global;
+// Declaração de variáveis globais
+int g_contador;
+car g_letra_inicial;
 
-/* Função que calcula o fatorial de um número */
+
+// Declaração de funções antes do bloco 'programa'
 int fatorial(int n) {
-    /* Declaração de variável local */
-    int resultado;
-    
-    /* Estrutura condicional */
-    se (n <= 1) entao
-        retorne 1;
-    senao
-        resultado = n * fatorial(n - 1);
-    
-    retorne resultado;
-}
-
-/* Função que verifica se um número é primo */
-int eh_primo(int num) {
-    int i;
-    
-    se (num <= 1) entao
-        retorne 0;
-    
-    /* Estrutura de repetição */
-    enquanto (i * i <= num) execute {
-        se (num e i == 0) entao
-            retorne 0;
-        i = i + 1;
+    se (n == 0) entao {
+        retorne 1; // Retorno do tipo 'int', compatível com a função
     }
-    
-    retorne 1;
+
+    retorne n * fatorial(n - 1); // Operadores e operandos do tipo 'int'
 }
 
-/* Função principal */
+car proxima_letra(car c, int offset) {
+    // Bloco aninhado com shadowing de parâmetro (permitido)
+    {
+        int c; // 'c' aqui é uma nova variável local, sobrepõe o parâmetro
+        c = 100;
+        escreva "Valor do 'c' local: ";
+        escreva c;
+        novalinha;
+    }
+
+    // A expressão de retorno deve ser do tipo 'car'
+    //retorne c; // Permitido, pois 'car' é tratado como inteiro na aritmética
+}
+
+
+// Bloco principal do programa
 programa {
-    /* Declaração de variáveis locais */
-    int a, b, c, opcao;
-    car caractere;
     
-    /* Atribuições e operações aritméticas */
-    a = 10;
-    b = 20;
-    c = a + b * 3 - 5 / 2;
-    
-    /* Chamada de função */
-    c = fatorial(5);
-    
-    /* Entrada de dados */
-    leia opcao;
-    leia caractere;
-    
-    /* Saída de dados */
-    escreva "O fatorial de 5 é: ";
-    escreva c;
-    novalinha;
-    
-    escreva "Digite um número para verificar se é primo: ";
-    leia a;
-    
-    /* Estrutura condicional completa com operações lógicas */
-    se (eh_primo(a) == 1) entao
-        escreva "O número é primo";
-    senao
-        escreva "O número não é primo";
-    novalinha;
-    
-    /* Operações de comparação */
-    se (a > b e a < 100) entao {
-        escreva "O número está entre ";
-        escreva b;
-        escreva " e 100";
-        novalinha;
-    }
-    
-    /* Operações lógicas complexas */
-    se ((a == 0 ou b == 0) e (c < 0)) entao
-        escreva "Condição complexa satisfeita";
-    novalinha;
-    
-    /* Bloco de código aninhado */
-    enquanto (opcao != 0) execute {
-        escreva "Menu:";
-        novalinha;
-        escreva "1 - Calcular fatorial";
-        novalinha;
-        escreva "2 - Verificar primo";
-        novalinha;
-        escreva "0 - Sair";
-        novalinha;
-        escreva "Opção: ";
+        // Declarações de variáveis locais
+        int numero;
+        int resultado_fatorial;
+        car minha_letra;
+
+        // Atribuições com tipos compatíveis e uso de globais
+        g_contador = 5;
+        g_letra_inicial = 'b';
+        numero = g_contador;
+        minha_letra = g_letra_inicial;
         
-        leia opcao;
-        
-        se (opcao == 1) entao {
-            escreva "Digite um número: ";
-            leia a;
-            escreva "Fatorial: ";
-            escreva fatorial(a);
+        // Chamada de função com número e tipos de argumentos corretos
+        resultado_fatorial = fatorial(numero);
+
+        escreva "Fatorial de ";
+        escreva numero;
+        escreva " eh: ";
+        escreva resultado_fatorial;
+        novalinha;
+
+        // A condição do 'enquanto' é do tipo 'int' (resultado de uma comparação)
+        enquanto (g_contador > 0) execute {
+            // Shadowing de variável global
+            int g_contador;
+            g_contador = -1; // Esta é uma variável local ao laço
+
+            escreva "Contador local do laco: ";
+            escreva g_contador; // Deve imprimir -1
             novalinha;
-        } senao se (opcao == 2) entao {
-            escreva "Digite um número: ";
-            leia a;
-            se (eh_primo(a)) entao
-                escreva "É primo";
-            senao
-                escreva "Não é primo";
-            novalinha;
+            
+            // A variável global não é afetada aqui
+            numero = numero - 1; // Para evitar loop infinito no teste
         }
-    }
-    
-    /* Operações com strings (cadeias de caracteres) */
-    escreva "Programa encerrado. Obrigado!";
-    novalinha;
-    
-    /* Expressões complexas */
-    c = (a + b) * (a - b) / 2 + (10 / 3);
-    
-    /* Operadores relacionais diversos */
-    se (a >= b ou a <= c e b != a) entao
-        escreva "Condição relacional satisfeita";
-    novalinha;
-    
-    /* Uso de todos os operadores */
-    a = a + 1;
-    b = b - 1;
-    c = c * 2;
-    a = a / 2;
-    
-    /* Operadores unários */
-    a = -a;
-    
-    retorne 0;
+        
+        // Chamada de outra função
+        minha_letra = proxima_letra(minha_letra, 1);
+        escreva "A proxima letra eh: ";
+        escreva minha_letra;
+        novalinha;
 }
