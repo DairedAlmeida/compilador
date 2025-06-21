@@ -165,11 +165,7 @@ void analisa_bloco(No* no) {
     // Os comandos do bloco são o filho2. Visita cada um deles.
     for (No* cmd = no->filho2; cmd != NULL; cmd = cmd->proximo) visita_no(cmd);
 
-    // ATENÇÃO: HÁ UM BUG AQUI! A linha para desempilhar o escopo do bloco está comentada.
-    // Isso significa que os escopos de blocos nunca são fechados, o que pode levar a um
-    // comportamento incorreto (variáveis "vazando" do seu escopo) e a um estouro da pilha de escopos.
-    // A linha correta seria: desempilhar(&pilha_escopos);
-    //desempilhar(&pilha_escopos);
+    desempilhar(&pilha_escopos);
 }
 
 // Analisa um nó de identificador (uso de uma variável ou função).
@@ -386,9 +382,6 @@ int analisar(No* raiz_arvore) {
 
     // 4. Inicia o percurso da árvore a partir do nó raiz.
     visita_no(raiz_arvore);
-
-    // No final, o escopo global poderia ser desempilhado com `desempilhar(&pilha_escopos);`.
-    // No entanto, como o programa termina logo em seguida, a falta dessa linha não causa problemas práticos.
 
     // 5. Retorna 0. Se algum erro tivesse ocorrido, a função `erro_semantico` já teria encerrado o programa.
     return 0;
