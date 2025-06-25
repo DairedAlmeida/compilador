@@ -379,7 +379,6 @@ int analisar(No* raiz_arvore) {
     empilhar(&pilha_escopos);
     // 3. Adiciona as funções nativas da linguagem ao escopo global.
     inicializar_simbolos_nativos();
-
     // 4. Inicia o percurso da árvore a partir do nó raiz.
     visita_no(raiz_arvore);
 

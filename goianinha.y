@@ -233,10 +233,31 @@ Comando
     /* Um comando pode ser uma expressão, um retorno, uma chamada, um condicional, etc. */
     : Expr ';'              { $$ = $1; }
     | RETORNE Expr ';'      { $$ = cria_no(NO_RETORNO, yylineno, NULL); $$->filho1 = $2; }
-    | LEIA ID ';'           { $$ = cria_no(NO_IDENTIFICADOR, yylineno, "leia"); $$->filho1 = cria_no(NO_IDENTIFICADOR, yylineno, $2); free($2); }
-    | ESCREVA Expr ';'      { $$ = cria_no(NO_IDENTIFICADOR, yylineno, "escreva"); $$->filho1 = $2; }
-    | ESCREVA CAD_CAR ';'   { $$ = cria_no(NO_IDENTIFICADOR, yylineno, "escreva"); $$->filho1 = cria_no(NO_CONST_CAR, yylineno, $2); free($2); }
-    | NOVALINHA ';'         { $$ = cria_no(NO_IDENTIFICADOR, yylineno, "novalinha"); }
+    
+    // REGRA CORRIGIDA PARA LEIA
+    | LEIA ID ';'           { 
+                                $$ = cria_no(NO_CHAMADA_FUNCAO, yylineno, "leia"); 
+                                $$->filho1 = cria_no(NO_IDENTIFICADOR, yylineno, $2); 
+                                free($2);
+                            }
+    // REGRA CORRIGIDA PARA ESCREVA
+    | ESCREVA Expr ';'      { 
+                                $$ = cria_no(NO_CHAMADA_FUNCAO, yylineno, "escreva"); 
+                                $$->filho1 = $2; 
+                            }
+    // REGRA CORRIGIDA PARA ESCREVA COM CADEIA DE CARACTERES (já estava quase certo)
+    | ESCREVA CAD_CAR ';'   { 
+                                No* str_node = cria_no(NO_CONST_CAR, yylineno, $2);
+                                $$ = cria_no(NO_CHAMADA_FUNCAO, yylineno, "escreva");
+                                $$->filho1 = str_node;
+                                free($2);
+                            }
+    // REGRA CORRIGIDA PARA NOVALINHA
+    | NOVALINHA ';'         { 
+                                $$ = cria_no(NO_CHAMADA_FUNCAO, yylineno, "novalinha");
+                                $$->filho1 = NULL; // Sem argumentos
+                            }
+    
     | SE '(' Expr ')' ENTAO Comando           { $$ = cria_no(NO_IF, yylineno, NULL); $$->filho1 = $3; $$->filho2 = $6; $$->filho3 = NULL; }
     | SE '(' Expr ')' ENTAO Comando SENAO Comando { $$ = cria_no(NO_IF, yylineno, NULL); $$->filho1 = $3; $$->filho2 = $6; $$->filho3 = $8; }
     | ENQUANTO '(' Expr ')' EXECUTE Comando   { $$ = cria_no(NO_WHILE, yylineno, NULL); $$->filho1 = $3; $$->filho2 = $6; }

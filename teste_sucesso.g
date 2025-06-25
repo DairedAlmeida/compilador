@@ -31,8 +31,10 @@ int processa_status(int g_contador, car novo_status) {
     escreva "Contador local (parametro): ";
     escreva g_contador;
     novalinha;
+    escreva "Status local (parametro): ";
+    escreva novo_status;
 
-    se (novo_status == 'A' ou novo_status == 'I') entao {
+    se (g_contador == 100) entao {
         g_letra_status = novo_status; // Modifica a variável global
     } senao {
         g_letra_status = '?';
@@ -49,12 +51,13 @@ programa {
         int numero_leitura, resultado_fat;
         car char_lido;
         char_lido = 'A'; // Atribuição de char
+        escreva char_lido;
 
         escreva "Digite um numero para calcular o fatorial: ";
         leia numero_leitura;
 
         // Testa chamada de função, atribuição e expressões complexas
-        se (numero_leitura > 0 e !(numero_leitura > 10)) entao {
+        se (numero_leitura > 0 e numero_leitura <= 10) entao {
             resultado_fat = fatorial(numero_leitura);
             escreva "O fatorial eh: ";
             escreva resultado_fat;

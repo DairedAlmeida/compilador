@@ -1,46 +1,71 @@
+# -----------------------------------------------------------------------------
+# Makefile para o Compilador da Linguagem Goianinha
+# -----------------------------------------------------------------------------
+
+# Compilador a ser usado
 CC = gcc
+
+# Flags de compilação: -g para informações de debug, -Wall para todos os warnings
+CFLAGS = -g -Wall
+
+# Ferramentas de geração
 LEX = flex
-YACC = bison
-CFLAGS = -g -Wall -std=c99 -D_POSIX_C_SOURCE=200809L
+BISON = bison
+
+# Flags de linkagem: -lfl é necessária para a biblioteca do Flex
+LDFLAGS = -lfl
+
+# Nome do executável final
 EXEC = goianinha
 
-# 1. CORREÇÃO: Adicionado 'analise_semantica.o' à lista de objetos.
-OBJS = main.o lex.yy.o goianinha.tab.o arvore.o tabela_simbolos.o analise_semantica.o
+# Arquivos de código-fonte (.c) do projeto.
+# Os arquivos gerados (goianinha.tab.c, lex.yy.c) são adicionados automaticamente.
+SRCS = main.c \
+       arvore.c \
+       tabela_simbolos.c \
+       analise_semantica.c \
+       geracao_codigo.c
 
+# Converte a lista de fontes (.c) para uma lista de objetos (.o)
+OBJS = $(SRCS:.c=.o)
+
+# Arquivos gerados pelo Flex e Bison
+GENERATED_SRCS = goianinha.tab.c lex.yy.c
+GENERATED_OBJS = $(GENERATED_SRCS:.c=.o)
+GENERATED_HDRS = goianinha.tab.h
+
+# --- Regras do Makefile ---
+
+# A regra padrão, chamada quando se executa 'make' sem argumentos.
+# O alvo é o executável final.
 all: $(EXEC)
 
-# O linker agora receberá analise_semantica.o e encontrará a função 'analisar'.
-$(EXEC): $(OBJS)
-	$(CC) $(CFLAGS) $(OBJS) -o $@
+# Regra de linkagem: cria o executável final a partir de todos os arquivos objeto.
+$(EXEC): $(OBJS) $(GENERATED_OBJS)
+	$(CC) $(CFLAGS) -o $(EXEC) $(OBJS) $(GENERATED_OBJS) $(LDFLAGS)
+	@echo "Compilador '$(EXEC)' criado com sucesso!"
 
-# Adicionada a dependência 'analise_semantica.h' para main.o, por boas práticas.
-main.o: main.c goianinha.tab.h arvore.h tabela_simbolos.h analise_semantica.h
-	$(CC) $(CFLAGS) -c main.c -o main.o
-
-# 2. CORREÇÃO: Adicionada a regra para compilar analise_semantica.c
-analise_semantica.o: analise_semantica.c analise_semantica.h arvore.h tabela_simbolos.h
-	$(CC) $(CFLAGS) -c analise_semantica.c -o analise_semantica.o
-
-arvore.o: arvore.c arvore.h
-	$(CC) $(CFLAGS) -c arvore.c -o arvore.o
-
-tabela_simbolos.o: tabela_simbolos.c tabela_simbolos.h arvore.h
-	$(CC) $(CFLAGS) -c tabela_simbolos.c -o tabela_simbolos.o
-
-lex.yy.o: lex.yy.c goianinha.tab.h
-	$(CC) $(CFLAGS) -c lex.yy.c -o lex.yy.o
-
-goianinha.tab.o: goianinha.tab.c arvore.h tabela_simbolos.h
-	$(CC) $(CFLAGS) -c goianinha.tab.c -o goianinha.tab.o
-
-lex.yy.c: goianinha.l
-	$(LEX) $<
-
+# Regra para gerar o parser do Bison e o cabeçalho correspondente.
+# O '-d' cria o arquivo de cabeçalho goianinha.tab.h.
 goianinha.tab.c goianinha.tab.h: goianinha.y
-	$(YACC) -d $<
+	$(BISON) -d goianinha.y
 
+# Regra para gerar o scanner do Flex.
+# Depende do cabeçalho gerado pelo Bison para conhecer os tokens.
+lex.yy.c: goianinha.l goianinha.tab.h
+	$(LEX) goianinha.l
+
+# Regra de compilação genérica: transforma qualquer arquivo .c em .o.
+# O alvo (.o) depende do seu respectivo .c e dos cabeçalhos gerados.
+%.o: %.c $(GENERATED_HDRS)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+# Regra "clean": remove todos os arquivos gerados pela compilação.
+# Útil para forçar uma reconstrução completa do projeto.
 clean:
-	rm -f $(OBJS) lex.yy.c goianinha.tab.* $(EXEC)
+	rm -f $(EXEC) $(OBJS) $(GENERATED_OBJS) $(GENERATED_SRCS) $(GENERATED_HDRS)
+	rm -f *.asm
+	@echo "Limpeza concluída."
 
-cleanWin:
-	del /Q /F *.o lex.yy.c goianinha.tab.* $(EXEC).exe
+# Declara os alvos que não são arquivos reais.
+.PHONY: all clean

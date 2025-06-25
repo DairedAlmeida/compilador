@@ -89,4 +89,7 @@ void imprime_arvore(No* raiz, int profundidade);
 // Libera toda a memória alocada para a árvore recursivamente.
 void libera_arvore(No* raiz);
 
+// Cria uma cópia profunda (deep copy) de uma árvore.
+No* copia_arvore(No* raiz);
+
 #endif // ARVORE_H

@@ -57,6 +57,43 @@ void adiciona_filho(No* pai, No* filho) {
     // Isso assume que a gramática da linguagem não precisa de mais de 4 filhos diretos.
 }
 
+No* copia_arvore(No* raiz) {
+    // Condição de parada da recursão: se o nó original é nulo, a cópia também é.
+    if (raiz == NULL) {
+        return NULL;
+    }
+
+    // Aloca memória para o novo nó da cópia.
+    No* novo_no = (No*) malloc(sizeof(No));
+    if (!novo_no) {
+        printf("Erro: Falha de alocação de memória para cópia do nó.\n");
+        exit(1);
+    }
+
+    // Copia os valores do nó original para o novo nó.
+    novo_no->tipo_no = raiz->tipo_no;
+    novo_no->tipo_dado = raiz->tipo_dado; // Copia o tipo, mesmo que seja INDEFINIDO.
+    novo_no->linha = raiz->linha;
+
+    // Se houver um lexema, cria uma cópia separada dele na memória.
+    // Isso é crucial para uma cópia profunda.
+    if (raiz->lexema != NULL) {
+        novo_no->lexema = strdup(raiz->lexema);
+    } else {
+        novo_no->lexema = NULL;
+    }
+
+    // Chama recursivamente a função de cópia para todos os filhos e para o próximo irmão.
+    novo_no->filho1 = copia_arvore(raiz->filho1);
+    novo_no->filho2 = copia_arvore(raiz->filho2);
+    novo_no->filho3 = copia_arvore(raiz->filho3);
+    novo_no->filho4 = copia_arvore(raiz->filho4);
+    novo_no->proximo = copia_arvore(raiz->proximo);
+
+    // Retorna o ponteiro para o nó recém-copiado.
+    return novo_no;
+}
+
 // Função recursiva para imprimir a árvore (usada para depuração).
 void imprime_arvore(No* no, int profundidade) {
     // Condição de parada da recursão: se o nó é nulo, não há nada a fazer.

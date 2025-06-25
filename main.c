@@ -5,6 +5,7 @@
 #include "arvore.h"       // Inclui a definição da Árvore Sintática Abstrata.
 #include "tabela_simbolos.h" // Inclui a definição da Tabela de Símbolos.
 #include "analise_semantica.h" // Inclui a função principal da análise semântica.
+#include "geracao_codigo.h"
 
 // --- Variáveis Globais Externas ---
 // Estas variáveis são definidas e gerenciadas pelo analisador léxico (Flex/Lex)
@@ -21,7 +22,7 @@ extern char *yytext;   // Ponteiro para o texto do token (lexema) mais recente e
 No* raiz_arvore = NULL;
 
 // Variável para controlar o modo de depuração.
-int debug_mode = 0;
+int debug_mode = 1;
 
 // Função de erro exigida pelo Yacc/Bison.
 // É chamada automaticamente pelo parser (`yyparse`) quando encontra um erro de sintaxe.
@@ -60,43 +61,56 @@ int main(int argc, char **argv) {
     // para obter tokens e constrói a Árvore Sintática Abstrata, cuja raiz é armazenada em 'raiz_arvore'.
     printf("Iniciando análise léxica e sintática...\n");
     int result = yyparse();
-    fclose(yyin); // Fecha o arquivo de entrada após a análise.
+    fclose(yyin); 
 
-    // Verifica o resultado da análise sintática.
-    if (result == 0) { // 0 significa sucesso.
+    if (result == 0) {
         printf("Análise léxica e sintática concluída com sucesso!\n\n");
 
-        // Se o modo de depuração estiver ativo, imprime a ASA.
         if (debug_mode) {
-            printf("--- Árvore Sintática Abstrata ---\n");
+            printf("--- Árvore Sintática Abstrata Original ---\n");
             imprime_arvore(raiz_arvore, 0);
-            printf("---------------------------------\n\n");
+            printf("----------------------------------------\n\n");
         }
 
-        // 2. Análise Semântica
-        printf("Iniciando análise semântica...\n");
-        // Chama a função principal do analisador semântico, passando a ASA.
-        int erros_semanticos = analisar(raiz_arvore);
+        // --- Cria cópias da árvore para as próximas fases ---
+        No* arvore_para_semantica = copia_arvore(raiz_arvore);
+        No* arvore_para_geracao = copia_arvore(raiz_arvore);
 
-        // Verifica o resultado da análise semântica.
-        if (erros_semanticos == 0) { // 0 significa sucesso.
-            printf("Análise semântica concluída sem erros!\n");
+        // 2. Análise Semântica (usa a primeira cópia)
+        printf("Iniciando análise semântica...\n");
+        int erros_semanticos = analisar(arvore_para_semantica);
+
+        if (erros_semanticos == 0) {
+            printf("Análise semântica concluída sem erros!\n\n");
+
+            // 3. Geração de Código (usa a segunda cópia, intacta)
+            printf("Iniciando geração de código...\n");
+            char nome_arquivo_saida[256];
+            strcpy(nome_arquivo_saida, argv[1]);
+            char *ponto = strrchr(nome_arquivo_saida, '.');
+            if (ponto) {
+                strcpy(ponto, ".asm");
+            } else {
+                strcat(nome_arquivo_saida, ".asm");
+            }
+            gerar_codigo(arvore_para_geracao, nome_arquivo_saida);
+
             printf("\nCompilação concluída com sucesso!\n");
         } else {
-            // Embora o analisador semântico já aborte no primeiro erro, esta mensagem seria
-            // mostrada caso ele fosse modificado para contar os erros em vez de abortar.
-            fprintf(stderr, "\nCompilação abortada com %d erro(s) semântico(s).\n", erros_semanticos);
-            result = 1; // Define o status de saída como erro.
+            fprintf(stderr, "\nCompilação abortada com erro(s) semântico(s).\n");
+            result = 1; 
         }
 
-    } else { // Se `yyparse` retornou um valor diferente de 0, houve erros sintáticos.
+        // Libera a memória de TODAS as árvores criadas
+        libera_arvore(arvore_para_semantica);
+        libera_arvore(arvore_para_geracao);
+
+    } else { 
         fprintf(stderr, "\nCompilação abortada com erros sintáticos.\n");
     }
 
-    // 3. Liberação de Memória
-    // É crucial liberar a memória alocada para a ASA para evitar vazamentos de memória (memory leaks).
+    // Libera a memória da árvore original
     libera_arvore(raiz_arvore);
 
-    // Retorna o status final da compilação (0 para sucesso, 1 para falha).
     return result;
 }

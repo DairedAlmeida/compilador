@@ -3,12 +3,12 @@
 // Cada trecho de código abaixo viola uma regra da gramática.
 
 // ERRO SINTÁTICO: Ponto e vírgula faltando após a declaração de variável
-/*
+
 programa {
-    int a
+    int a;
     a = 10;
 }
-*/
+
 // ERRO SINTÁTICO: Palavra-chave 'programa' no lugar errado (dentro de um bloco)
 /*
 programa {

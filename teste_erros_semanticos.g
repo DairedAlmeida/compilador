@@ -8,11 +8,11 @@ int soma(int x, int y) {
 }
 
 // ERRO SEMÂNTICO: Função declarada com um tipo de retorno, mas retorna outro
-/*
+
 int func_retorno_errado() {
-    retorne 'x'; // Deve retornar INT
+    int y;
+    retorne y; // Deve retornar INT
 }
-*/
 
 programa {
     int i;
